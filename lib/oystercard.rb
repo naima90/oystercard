@@ -16,10 +16,6 @@ class Oystercard
     raise 'Maximum balance of #{Oystercard::MAXIMUM_BALANCE} exceeded' if amount + balance > MAXIMUM_BALANCE
     @balance += amount
   end
-  
-  def deduct(amount)
-    @balance -= amount
-  end
 
   def in_journey?
     @journey
@@ -33,5 +29,10 @@ class Oystercard
   def touch_out
     deduct(MINIMUM_CHARGE)
     @journey = false
+  end
+  
+  private
+  def deduct(amount)
+    @balance -= amount
   end
 end
