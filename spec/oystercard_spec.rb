@@ -24,7 +24,7 @@ describe Oystercard do
 
     it 'reduces balance by the specified amount' do
       subject.top_up(10)
-      expect{ subject.deduct 2}.to change{ subject.balance}.by -2
+      expect{ subject.deduct 2 }.to change{ subject.balance}.by -2
     end
   end
 
@@ -47,5 +47,11 @@ describe Oystercard do
 
   it 'raise an error if card with insufficient balance is touched in' do
     expect { subject.touch_in }.to raise_error "Insufficient balance, Please top up"
+  end
+
+  it 'deducts correct amount after touch out' do
+    subject.top_up(3)
+    subject.touch_in
+    expect { subject.touch_out }.to change{ subject.balance }.by(-Oystercard::MINIMUM_CHARGE)
   end
 end
