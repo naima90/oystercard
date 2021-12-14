@@ -33,13 +33,19 @@ describe Oystercard do
   end
 
   it "touch in if not in journey" do
+    subject.top_up(2)
     subject.touch_in
     expect(subject).to be_in_journey
   end
 
   it 'touch out if in journey' do
+    subject.top_up(2)
     subject.touch_in
     subject.touch_out
     expect(subject).not_to be_in_journey
+  end
+
+  it 'raise an error if card with insufficient balance is touched in' do
+    expect { subject.touch_in }.to raise_error "Insufficient balance, Please top up"
   end
 end

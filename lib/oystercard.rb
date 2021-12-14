@@ -25,6 +25,7 @@ class Oystercard
   end
 
   def touch_in
+    raise "Insufficient balance, Please top up" if @balance < 1
     @journey = true
   end
 
