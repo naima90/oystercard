@@ -1,7 +1,7 @@
 require 'oystercard'
 describe Oystercard do
-  let(:station){ double :station }
-  let(:station_two){ double :station_two }
+  let(:station){ double :station, :name => "London Bridge", :zone => 1 }
+  let(:station_two){ double :station_two, :name => "Camden Town", :zone => 1 }
   
   def top_up_touch_in 
     subject.top_up(3)
@@ -65,6 +65,6 @@ describe Oystercard do
 
   it 'saves all previous stations' do
     top_up_touch_out
-    expect(subject.journey_log).to eq [{in: station, out: station_two}]
+    expect(subject.journey_log).to eq [{station_in: "London Bridge", zone_in: 1, station_out: "Camden Town", zone_out: 1}]
   end
 end

@@ -25,13 +25,14 @@ class Oystercard
   def touch_in(station)
     raise "Insufficient balance, Please top up" if @balance < MINIMUM_CHARGE
     @entry_station = station
-    @journey_hash = { in: station, out: nil }
+    @journey_hash = { station_in: station.name, zone_in: station.zone, station_out: nil, zone_out: nil }
   end
 
   def touch_out(station)
     deduct(MINIMUM_CHARGE)
     @entry_station = nil
-    @journey_hash[:out] = station
+    @journey_hash[:station_out] = station.name
+    @journey_hash[:zone_out] = station.zone
     @journey_log << @journey_hash
   end
   
