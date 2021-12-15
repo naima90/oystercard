@@ -7,7 +7,7 @@ describe Oystercard do
     subject.top_up(3)
     subject.touch_in(station)
   end
-  def top_up_touch_out 
+  def top_up_touch_in_touch_out 
     subject.top_up(3)
     subject.touch_in(station)
     subject.touch_out(station_two)
@@ -41,7 +41,7 @@ describe Oystercard do
   end
 
   it 'touch out if in journey' do
-    top_up_touch_out 
+    top_up_touch_in_touch_out 
     expect(subject).not_to be_in_journey
   end
 
@@ -53,18 +53,23 @@ describe Oystercard do
     top_up_touch_in
     expect { subject.touch_out(station_two) }.to change{ subject.balance }.by(-Oystercard::MINIMUM_CHARGE)
   end
-
-  it 'remembers the entry station after touch in' do
-    top_up_touch_in
-    expect(subject.entry_station).to eq station
-  end
   
   it 'checks a list of empty journeys at the start' do
     expect(subject.journey_log).to eq []
   end
 
   it 'saves all previous stations' do
-    top_up_touch_out
+    top_up_touch_in_touch_out
     expect(subject.journey_log).to eq [{station_in: "London Bridge", zone_in: 1, station_out: "Camden Town", zone_out: 1}]
   end
+
+  it 'charges penalty fare if touched out but did not touch in' do
+    subject.top_up(3)
+    expect { subject.touch_out(station_two) }.to change{ subject.balance }.by (-Oystercard::PENALTY_FARE)
+  end
+  it 'charges penalty fare for not touching out' do
+    top_up_touch_in
+    expect { subject.touch_in(station) }.to change{ subject.balance }.by (-Oystercard::PENALTY_FARE)
+  end
 end
+
