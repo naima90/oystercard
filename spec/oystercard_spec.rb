@@ -1,6 +1,17 @@
 require 'oystercard'
 describe Oystercard do
   let(:station){ double :station }
+  let(:station_two){ double :station_two }
+  
+  def top_up_touch_in 
+    subject.top_up(3)
+    subject.touch_in(station)
+  end
+  def top_up_touch_out 
+    subject.top_up(3)
+    subject.touch_in(station)
+    subject.touch_out(station_two)
+  end
 
   it 'card needs to have a balance of 0' do
     expect(subject.balance).to eq 0
@@ -25,15 +36,12 @@ describe Oystercard do
   end
 
   it "touch in if not in journey" do
-    subject.top_up(2)
-    subject.touch_in(station)
+    top_up_touch_in 
     expect(subject).to be_in_journey
   end
 
   it 'touch out if in journey' do
-    subject.top_up(2)
-    subject.touch_in(station)
-    subject.touch_out
+    top_up_touch_out 
     expect(subject).not_to be_in_journey
   end
 
@@ -42,14 +50,21 @@ describe Oystercard do
   end
 
   it 'deducts correct amount after touch out' do
-    subject.top_up(3)
-    subject.touch_in(station)
-    expect { subject.touch_out }.to change{ subject.balance }.by(-Oystercard::MINIMUM_CHARGE)
+    top_up_touch_in
+    expect { subject.touch_out(station_two) }.to change{ subject.balance }.by(-Oystercard::MINIMUM_CHARGE)
   end
 
   it 'remembers the entry station after touch in' do
-    subject.top_up(3)
-    subject.touch_in(station)
+    top_up_touch_in
     expect(subject.entry_station).to eq station
+  end
+  
+  it 'checks a list of empty journeys at the start' do
+    expect(subject.journey_log).to eq []
+  end
+
+  it 'saves all previous stations' do
+    top_up_touch_out
+    expect(subject.journey_log).to eq [{in: station, out: station_two}]
   end
 end
